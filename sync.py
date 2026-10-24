@@ -5,8 +5,9 @@ Every in-stock Shopify product whose `custom.supplier` metafield points at a sit
 in sites.json is checked. If the supplier page says the item is sold out (or the page is
 gone), the Shopify stock is set to 0.
 
-Auth: with SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET set (GitHub Actions), the script gets
-a token with the client credentials grant and calls the Admin API directly. Without them it
+Auth (GitHub Actions): SHOPIFY_ACCESS_TOKEN, an offline token made once with get_token.py,
+is used as is. Otherwise SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET get a token with the client
+credentials grant (only works when the app and the store are in the same organization). Without them it
 falls back to the local Shopify CLI (`shopify store execute`), which is handy for testing.
 
     python3 sync.py            # sync
@@ -34,6 +35,8 @@ _token = None
 
 def token():
     global _token
+    if _token is None and os.environ.get("SHOPIFY_ACCESS_TOKEN"):
+        _token = os.environ["SHOPIFY_ACCESS_TOKEN"]   # offline token from get_token.py
     if _token is None:
         body = urllib.parse.urlencode({
             "grant_type": "client_credentials",
@@ -49,7 +52,7 @@ def token():
     return _token
 
 def gql(query, variables=None, mutation=False):
-    if os.environ.get("SHOPIFY_CLIENT_ID"):
+    if os.environ.get("SHOPIFY_ACCESS_TOKEN") or os.environ.get("SHOPIFY_CLIENT_ID"):
         req = urllib.request.Request(
             f"https://{STORE}/admin/api/{API_VERSION}/graphql.json",
             data=json.dumps({"query": query, "variables": variables or {}}).encode(),
@@ -155,8 +158,9 @@ def in_stock(url, site):
 # ---------- main ----------
 
 def main():
-    if os.environ.get("GITHUB_ACTIONS") and not (os.environ.get("SHOPIFY_CLIENT_ID") and os.environ.get("SHOPIFY_CLIENT_SECRET")):
-        log("ERROR secrets SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET are not set "
+    if os.environ.get("GITHUB_ACTIONS") and not (os.environ.get("SHOPIFY_ACCESS_TOKEN") or
+                                             (os.environ.get("SHOPIFY_CLIENT_ID") and os.environ.get("SHOPIFY_CLIENT_SECRET"))):
+        log("ERROR secret SHOPIFY_ACCESS_TOKEN (or SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET) is not set "
             "(Settings -> Secrets and variables -> Actions -> Repository secrets)")
         sys.exit(1)
     sites = load_sites()

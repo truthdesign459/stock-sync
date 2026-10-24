@@ -42,7 +42,10 @@ GitHub の **Actions → Stock sync → Run workflow**。
 
 **Settings → Secrets and variables → Actions** に登録します。
 
-- `SHOPIFY_CLIENT_ID`
-- `SHOPIFY_CLIENT_SECRET`
+- `SHOPIFY_ACCESS_TOKEN`
 
-値は、Shopify Dev Dashboard のアプリ（必要な権限: `read_products`, `read_inventory`, `write_inventory`）の **Settings** にあります。
+アプリ（Dev Dashboard の Stock Sync、必要な権限: `read_products`, `read_inventory`, `write_inventory`）とストアが別の組織にあるため、アクセストークンを使います。
+
+トークンは、Mac で `python3 get_token.py` を実行して一度だけ取得します。このとき、アプリの「許可されたリダイレクトURL」に `http://localhost:3456/callback` が登録されている必要があります。
+
+アプリとストアが同じ組織にある場合は、トークンの代わりに `SHOPIFY_CLIENT_ID` と `SHOPIFY_CLIENT_SECRET` の2つを登録しても動きます。

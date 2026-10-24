@@ -22,5 +22,6 @@ jobs:
         run: python3 sync.py ${{ inputs.dry_run && '--dry-run' || '' }}
         env:
           SHOPIFY_STORE: japan-baseball-cards.myshopify.com
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           SHOPIFY_CLIENT_ID: ${{ secrets.SHOPIFY_CLIENT_ID }}
           SHOPIFY_CLIENT_SECRET: ${{ secrets.SHOPIFY_CLIENT_SECRET }}
