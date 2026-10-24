@@ -42,7 +42,10 @@ def token():
         }).encode()
         req = urllib.request.Request(f"https://{STORE}/admin/oauth/access_token", data=body,
                                      headers={"Content-Type": "application/x-www-form-urlencoded"})
-        _token = json.load(urllib.request.urlopen(req, timeout=30))["access_token"]
+        try:
+            _token = json.load(urllib.request.urlopen(req, timeout=30))["access_token"]
+        except urllib.error.HTTPError as e:
+            raise RuntimeError(f"token request failed: HTTP {e.code} {e.read().decode(errors='ignore')[:500]}")
     return _token
 
 def gql(query, variables=None, mutation=False):
@@ -51,7 +54,10 @@ def gql(query, variables=None, mutation=False):
             f"https://{STORE}/admin/api/{API_VERSION}/graphql.json",
             data=json.dumps({"query": query, "variables": variables or {}}).encode(),
             headers={"Content-Type": "application/json", "X-Shopify-Access-Token": token()})
-        res = json.load(urllib.request.urlopen(req, timeout=60))
+        try:
+            res = json.load(urllib.request.urlopen(req, timeout=60))
+        except urllib.error.HTTPError as e:
+            raise RuntimeError(f"Admin API failed: HTTP {e.code} {e.read().decode(errors='ignore')[:500]}")
         if res.get("errors"):
             raise RuntimeError(res["errors"])
         return res["data"]
