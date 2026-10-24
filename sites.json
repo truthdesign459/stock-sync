@@ -1,0 +1,9 @@
+{
+  "sites": [
+    {
+      "name": "Card Fanatic",
+      "domains": ["www.cardfanatic.co.jp", "cardfanatic.co.jp"],
+      "in_stock_if_contains": ["cart-order-btn"]
+    }
+  ]
+}
