@@ -148,6 +148,10 @@ def in_stock(url, site):
     html = fetch(url, site)
     if html is None:
         return False
+    # guard against captcha / maintenance pages being read as "sold out"
+    must = site.get("page_must_contain")
+    if must and not any(s in html for s in must):
+        raise RuntimeError("not a normal item page (captcha, maintenance or layout change)")
     if any(s in html for s in site.get("sold_out_if_contains", [])):
         return False
     rule = site.get("in_stock_if_contains")

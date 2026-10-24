@@ -4,6 +4,24 @@
       "name": "Card Fanatic",
       "domains": ["www.cardfanatic.co.jp", "cardfanatic.co.jp"],
       "in_stock_if_contains": ["cart-order-btn"]
+    },
+    {
+      "name": "PayPay Flea Market",
+      "domains": ["paypayfleamarket.yahoo.co.jp"],
+      "page_must_contain": ["\"availability\""],
+      "in_stock_if_contains": ["schema.org/InStock"]
+    },
+    {
+      "name": "Yahoo! Shopping",
+      "domains": ["store.shopping.yahoo.co.jp"],
+      "page_must_contain": ["\"availability\""],
+      "in_stock_if_contains": ["schema.org/InStock"]
+    },
+    {
+      "name": "Amazon",
+      "domains": ["www.amazon.co.jp", "amazon.co.jp"],
+      "page_must_contain": ["id=\"productTitle\""],
+      "in_stock_if_contains": ["id=\"add-to-cart-button\""]
     }
   ]
 }
