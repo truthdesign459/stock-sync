@@ -155,6 +155,10 @@ def in_stock(url, site):
 # ---------- main ----------
 
 def main():
+    if os.environ.get("GITHUB_ACTIONS") and not (os.environ.get("SHOPIFY_CLIENT_ID") and os.environ.get("SHOPIFY_CLIENT_SECRET")):
+        log("ERROR secrets SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET are not set "
+            "(Settings -> Secrets and variables -> Actions -> Repository secrets)")
+        sys.exit(1)
     sites = load_sites()
     # group work by site so one broken site can be stopped without touching the others
     work, unknown = {}, 0
